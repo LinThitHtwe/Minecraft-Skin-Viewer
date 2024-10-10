@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+// import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import Provider from "@/provider/Provider";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -29,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} h-screen bg-white antialiased`}>
-        {children}
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
