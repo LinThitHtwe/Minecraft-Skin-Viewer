@@ -29,8 +29,9 @@ const SkinCanvas = ({
         const screenHeight = window.innerHeight;
 
         skinViewer.width = 500;
-        skinViewer.height = screenHeight;
+        skinViewer.height = screenHeight - 50;
 
+        //skinViewer.loadSkin("ivan_kelovic.png");
         // Set the background color
         skinViewer.background = "white";
 
@@ -41,12 +42,21 @@ const SkinCanvas = ({
         skinViewer.zoom = 0.6;
 
         // Rotate the player
-        skinViewer.autoRotate = true;
 
+        skinViewer.autoRotate = true;
+        //skinViewer.loadBackground("Bg.jpg");
+        //skinViewer.loadPanorama("Bg.jpg");
         // Apply a walking animation
         let walkingAnimation = new skinview3d.WalkingAnimation();
         skinViewer.animation = walkingAnimation;
         walkingAnimation.speed = 0.5;
+
+        // let run = new skinview3d.RunningAnimation();
+        // skinViewer.animation = run;
+        // run.speed = 200;
+
+        // Set the speed of an animation
+        // run.speed = 3;
 
         // Variables to handle dragging state
         let isDragging = false;
@@ -84,7 +94,7 @@ const SkinCanvas = ({
       {!isLoading ? (
         <canvas
           id="skin_container"
-          className=""
+          className="border-2  rounded-2xl"
           style={{ width: "50%", height: "80%" }}
         ></canvas>
       ) : (

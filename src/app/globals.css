@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -24,4 +24,69 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+} */
+
+/* For Chrome, Safari, and Opera */
+input[type="range"].range-slider::-webkit-slider-runnable-track {
+  background: #4ade80; /* Track color */
+  height: 8px;
+  border-radius: 10px;
+}
+
+input[type="range"].range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4ade80; /* Thumb color */
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ffffff; /* Optional border */
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"].range-slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.4); /* Add focus effect */
+}
+
+/* For Firefox */
+input[type="range"].range-slider::-moz-range-track {
+  background: #4ade80;
+  height: 8px;
+  border-radius: 10px;
+}
+
+input[type="range"].range-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #4ade80;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* For Internet Explorer */
+input[type="range"].range-slider::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+  width: 100%;
+  height: 8px;
+}
+
+input[type="range"].range-slider::-ms-fill-lower {
+  background: #4ade80;
+}
+
+input[type="range"].range-slider::-ms-fill-upper {
+  background: #4ade80;
+}
+
+input[type="range"].range-slider::-ms-thumb {
+  width: 20px;
+  height: 20px;
+  background: #4ade80;
+  border-radius: 50%;
+  cursor: pointer;
 }
