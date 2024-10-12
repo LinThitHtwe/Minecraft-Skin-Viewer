@@ -4,19 +4,29 @@ import { getPlayerDetail } from "@/apiCalls/queryFunctions";
 import SkinCanvas from "@/components/SkinCanvas";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const [inputUsername, setInputUsername] = useState("Notch");
   const [searchedUsername, setSearchedUsername] = useState("");
   const [shouldAnimationPlay, setShouldAnimationPlay] = useState(true);
+  const [shouldRotate, setShouldRotate] = useState(true);
   const [shouldWalk, setShouldWalk] = useState(true);
+  const [shouldRun, setShouldRun] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const [fov, setFov] = useState("75");
 
   const handleAnimationCheckbox = () => {
     setShouldAnimationPlay(!shouldAnimationPlay);
+    setShouldRotate(false);
+    setShouldWalk(false);
+    setShouldRun(false);
   };
 
-  const handleWalkAnimationCheckbox = () => {};
+  const handleWalkOrRunAnimationCheckbox = (isWalk: boolean) => {
+    setShouldWalk(isWalk ? !shouldWalk : false);
+    setShouldRun(!isWalk ? !shouldRun : false);
+  };
 
   const searchUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,7 +45,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="grid grid-cols-2 py-10 items-stretch px-28 gap-6  ">
+      <div className="grid grid-cols-2 py-6 items-stretch px-28 gap-6  ">
         <div className="border-2 rounded-2xl p-4">
           <h1 className="text-black text-3xl mb-5">Minecraft Skin Viewer</h1>
           <form onSubmit={searchUser} className="flex gap-3 flex-col mb-3">
@@ -67,7 +77,8 @@ export default function Home() {
                 id="first_name"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-2.5" // Adjusted width to w-20
                 placeholder="John"
-                value={75}
+                value={fov}
+                onChange={(e) => setFov(e.target.value)}
               />
             </div>
             <div>
@@ -79,9 +90,10 @@ export default function Home() {
               </label>
               <input
                 type="color"
-                className="p-1 h-10 w-10 block bg-gray-100 border border-gray-300 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none "
+                className="p-1 h-10 w-10 block bg-gray-50 border border-gray-300 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none"
                 id="hs-color-input"
-                value="#2563eb"
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
                 title="Choose your color"
               />
             </div>
@@ -98,18 +110,48 @@ export default function Home() {
             <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
           </label>
           <div className="flex gap-4 mb-4">
-            <label className="inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" />
-              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+            <label
+              className={`inline-flex items-center ${
+                shouldAnimationPlay
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed opacity-70"
+              }`}
+            >
+              <input
+                type="checkbox"
+                disabled={!shouldAnimationPlay}
+                className="sr-only peer "
+              />
+              <div className="relative w-11 h-6 bg-gray-200  peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               <span className="ms-2  text-sm text-gray-900">Rotate</span>
             </label>
-            <label className="inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" />
+            <label
+              className={`inline-flex items-center ${
+                shouldAnimationPlay
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed opacity-70"
+              }`}
+            >
+              <input
+                type="checkbox"
+                disabled={!shouldAnimationPlay}
+                className="sr-only peer"
+              />
               <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               <span className="ms-2  text-sm text-gray-900">Walk</span>
             </label>
-            <label className="inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" />
+            <label
+              className={`inline-flex items-center ${
+                shouldAnimationPlay
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed opacity-70"
+              }`}
+            >
+              <input
+                type="checkbox"
+                disabled={!shouldAnimationPlay}
+                className="sr-only peer"
+              />
               <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               <span className="ms-2  text-sm text-gray-900">Run</span>
             </label>
@@ -180,11 +222,13 @@ export default function Home() {
                 ? playerDetail?.textures.skin.url
                 : ""
             }
+            fov={fov}
+            backgroundColor={backgroundColor}
             isLoading={isLoading}
           />
         </div>
       </div>
-      <div className="text-center">
+      <div className="text-center pb-10">
         {" "}
         Enjoy this project ? Why not give a star on github ?
       </div>

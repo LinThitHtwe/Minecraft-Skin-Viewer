@@ -7,9 +7,13 @@ const NOTCHSKINURL =
 const SkinCanvas = ({
   skinUrl,
   isLoading,
+  backgroundColor,
+  fov,
 }: {
   skinUrl: string;
   isLoading: boolean;
+  backgroundColor: string;
+  fov: string;
 }) => {
   useEffect(() => {
     if (!isLoading && typeof window !== "undefined") {
@@ -33,10 +37,10 @@ const SkinCanvas = ({
         }
         //skinViewer.loadSkin("ivan_kelovic.png");
         // Set the background color
-        skinViewer.background = "#FFFFFF";
+        skinViewer.background = backgroundColor;
 
         // Change camera FOV
-        skinViewer.fov = 75;
+        skinViewer.fov = Number(fov);
 
         // Zoom out
         skinViewer.zoom = 0.6;
@@ -60,6 +64,11 @@ const SkinCanvas = ({
 
         // Variables to handle dragging state
         let isDragging = false;
+
+        // if (true) {
+        //   skinViewer.autoRotate = false;
+        //   skinViewer.animation.paused = true;
+        // }
 
         // Event listeners for dragging
         const startDragging = () => {
@@ -87,7 +96,7 @@ const SkinCanvas = ({
         };
       }
     }
-  }, [skinUrl, isLoading]);
+  }, [skinUrl, isLoading, backgroundColor, fov]);
 
   return (
     <>

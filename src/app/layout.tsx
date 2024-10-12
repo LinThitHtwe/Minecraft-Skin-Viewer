@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import localFont from "next/font/local";
+import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Provider from "@/provider/Provider";
@@ -16,6 +16,12 @@ import Provider from "@/provider/Provider";
 // });
 
 const inter = DM_Sans({ subsets: ["latin"] });
+
+// const minecraftFont = localFont({
+//   src: "./fonts/minecraft_font.ttf",
+//   variable: "--font-geist-sans",
+//   weight: "100 900",
+// });
 
 export const metadata: Metadata = {
   title: "Create Next App",
