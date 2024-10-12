@@ -25,15 +25,15 @@ const SkinCanvas = ({
         });
 
         // Change viewer size
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-
-        skinViewer.width = 500;
-        skinViewer.height = screenHeight - 50;
-
+        const container = canvas.parentElement;
+        if (container) {
+          const { width, height } = container.getBoundingClientRect();
+          skinViewer.width = width;
+          skinViewer.height = height;
+        }
         //skinViewer.loadSkin("ivan_kelovic.png");
         // Set the background color
-        skinViewer.background = "white";
+        skinViewer.background = "#FFFFFF";
 
         // Change camera FOV
         skinViewer.fov = 75;
@@ -94,8 +94,8 @@ const SkinCanvas = ({
       {!isLoading ? (
         <canvas
           id="skin_container"
-          className="border-2  rounded-2xl"
-          style={{ width: "50%", height: "80%" }}
+          className=" rounded-2xl"
+          //style={{ width: "50%", height: "80%" }}
         ></canvas>
       ) : (
         <div className="text-4xl text-black">Loading...</div>
