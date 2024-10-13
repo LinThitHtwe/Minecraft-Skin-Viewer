@@ -15,6 +15,7 @@ export default function Home() {
   const [shouldRun, setShouldRun] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [fov, setFov] = useState("75");
+  const [walkingSpeed, setWalkingSpeed] = useState("0.5");
 
   const handleAnimationCheckbox = () => {
     setShouldAnimationPlay(!shouldAnimationPlay);
@@ -121,6 +122,8 @@ export default function Home() {
                 type="checkbox"
                 disabled={!shouldAnimationPlay}
                 className="sr-only peer "
+                onChange={() => setShouldRotate(!shouldRotate)}
+                checked={shouldRotate}
               />
               <div className="relative w-11 h-6 bg-gray-200  peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               <span className="ms-2  text-sm text-gray-900">Rotate</span>
@@ -136,6 +139,8 @@ export default function Home() {
                 type="checkbox"
                 disabled={!shouldAnimationPlay}
                 className="sr-only peer"
+                checked={shouldWalk}
+                onChange={() => handleWalkOrRunAnimationCheckbox(true)}
               />
               <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               <span className="ms-2  text-sm text-gray-900">Walk</span>
@@ -151,6 +156,8 @@ export default function Home() {
                 type="checkbox"
                 disabled={!shouldAnimationPlay}
                 className="sr-only peer"
+                checked={shouldRun}
+                onChange={() => handleWalkOrRunAnimationCheckbox(false)}
               />
               <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
               <span className="ms-2  text-sm text-gray-900">Run</span>
@@ -225,6 +232,10 @@ export default function Home() {
             fov={fov}
             backgroundColor={backgroundColor}
             isLoading={isLoading}
+            shouldAnimationPlay={shouldAnimationPlay}
+            shouldRotate={shouldRotate}
+            shouldWalk={shouldWalk}
+            shouldRun={shouldRun}
           />
         </div>
       </div>

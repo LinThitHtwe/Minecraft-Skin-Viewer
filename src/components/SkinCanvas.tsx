@@ -9,16 +9,23 @@ const SkinCanvas = ({
   isLoading,
   backgroundColor,
   fov,
+  shouldAnimationPlay,
+  shouldRotate,
+  shouldWalk,
+  shouldRun,
 }: {
   skinUrl: string;
   isLoading: boolean;
   backgroundColor: string;
   fov: string;
+  shouldAnimationPlay: boolean;
+  shouldRotate: boolean;
+  shouldWalk: boolean;
+  shouldRun: boolean;
 }) => {
   useEffect(() => {
     if (!isLoading && typeof window !== "undefined") {
       const skinview3d = require("skinview3d");
-
       const canvas = document.getElementById("skin_container");
       if (canvas) {
         const skinViewer = new skinview3d.SkinViewer({
@@ -35,7 +42,7 @@ const SkinCanvas = ({
           skinViewer.width = width;
           skinViewer.height = height;
         }
-        //skinViewer.loadSkin("ivan_kelovic.png");
+
         // Set the background color
         skinViewer.background = backgroundColor;
 
@@ -46,45 +53,62 @@ const SkinCanvas = ({
         skinViewer.zoom = 0.6;
 
         // Rotate the player
+        skinViewer.autoRotate = shouldRotate;
 
-        skinViewer.autoRotate = true;
-        //skinViewer.loadBackground("Bg.jpg");
-        //skinViewer.loadPanorama("Bg.jpg");
-        // Apply a walking animation
+        // Default animations
         let walkingAnimation = new skinview3d.WalkingAnimation();
-        skinViewer.animation = walkingAnimation;
         walkingAnimation.speed = 0.5;
 
-        // let run = new skinview3d.RunningAnimation();
-        // skinViewer.animation = run;
-        // run.speed = 200;
+        let runAnimation = new skinview3d.RunningAnimation();
+        runAnimation.speed = 1;
 
-        // Set the speed of an animation
-        // run.speed = 3;
+        // Determine which animation to use based on `shouldWalk` and `shouldRun`
+        if (shouldWalk) {
+          skinViewer.animation = walkingAnimation;
+        } else if (shouldRun) {
+          skinViewer.animation = runAnimation;
+        } else {
+          // If both shouldWalk and shouldRun are false, remove animation
+          skinViewer.animation = null;
+        }
 
         // Variables to handle dragging state
         let isDragging = false;
 
-        // if (true) {
-        //   skinViewer.autoRotate = false;
-        //   skinViewer.animation.paused = true;
-        // }
+        if (!shouldAnimationPlay) {
+          skinViewer.autoRotate = false;
+          if (skinViewer.animation) skinViewer.animation.paused = true;
+        }
 
         // Event listeners for dragging
         const startDragging = () => {
           isDragging = true;
-          skinViewer.autoRotate = false;
-          skinViewer.animation.paused = true;
+
+          // Pause animations and disable autoRotate based on conditions
+          if (shouldAnimationPlay && skinViewer.animation) {
+            skinViewer.animation.paused = true;
+          }
+
+          if (!shouldRotate) {
+            skinViewer.autoRotate = false;
+          }
+
           canvas.style.cursor = "grabbing";
         };
 
         const stopDragging = () => {
-          if (isDragging) {
-            isDragging = false;
-            skinViewer.autoRotate = true;
+          isDragging = false;
+
+          // Resume animations and enable autoRotate based on conditions
+          if (shouldAnimationPlay && skinViewer.animation) {
             skinViewer.animation.paused = false;
-            canvas.style.cursor = "grab";
           }
+
+          if (shouldRotate) {
+            skinViewer.autoRotate = true;
+          }
+
+          canvas.style.cursor = "grab";
         };
 
         canvas.addEventListener("mousedown", startDragging);
@@ -96,7 +120,16 @@ const SkinCanvas = ({
         };
       }
     }
-  }, [skinUrl, isLoading, backgroundColor, fov]);
+  }, [
+    skinUrl,
+    isLoading,
+    backgroundColor,
+    fov,
+    shouldAnimationPlay,
+    shouldRotate,
+    shouldWalk,
+    shouldRun,
+  ]);
 
   return (
     <>
