@@ -15,18 +15,33 @@ export default function Home() {
   const [shouldRun, setShouldRun] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [fov, setFov] = useState("75");
-  const [walkingSpeed, setWalkingSpeed] = useState("0.5");
+  const [movementSpeed, setMovementSpeed] = useState("0.6");
 
   const handleAnimationCheckbox = () => {
     setShouldAnimationPlay(!shouldAnimationPlay);
     setShouldRotate(false);
     setShouldWalk(false);
     setShouldRun(false);
+    //setMovementSpeed("0.6");
   };
 
   const handleWalkOrRunAnimationCheckbox = (isWalk: boolean) => {
     setShouldWalk(isWalk ? !shouldWalk : false);
     setShouldRun(!isWalk ? !shouldRun : false);
+  };
+
+  const handleRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setMovementSpeed(value);
+  };
+
+  const handleMovementSpeedInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    if (!isNaN(parseFloat(value)) && value >= "0" && value <= "200") {
+      setMovementSpeed(value);
+    }
   };
 
   const searchUser = (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,7 +91,7 @@ export default function Home() {
               <input
                 type="text"
                 id="first_name"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-2.5" // Adjusted width to w-20
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-2.5"
                 placeholder="John"
                 value={fov}
                 onChange={(e) => setFov(e.target.value)}
@@ -174,14 +189,22 @@ export default function Home() {
               id="minmax-range"
               type="range"
               min="0"
-              max="100"
-              value="5"
+              max="200"
+              value={movementSpeed}
+              onChange={handleRangeChange}
               className="w-[80%] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <input
               type="text"
-              className=" border-2 w-8 h-6 rounded-md text-black px-2 py-1"
+              value={movementSpeed}
+              onChange={handleMovementSpeedInputChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-14 p-2.5"
             />
+            {movementSpeed != "0.6" && (
+              <button className="" onClick={() => setMovementSpeed("0.6")}>
+                Reset
+              </button>
+            )}
           </div>
 
           <label className="inline-flex border-b-2 mb-3 w-full pb-1 items-center cursor-pointer">
@@ -236,10 +259,11 @@ export default function Home() {
             shouldRotate={shouldRotate}
             shouldWalk={shouldWalk}
             shouldRun={shouldRun}
+            movementSpeed={movementSpeed}
           />
         </div>
       </div>
-      <div className="text-center pb-10">
+      <div className="text-center py-10">
         {" "}
         Enjoy this project ? Why not give a star on github ?
       </div>

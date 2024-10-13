@@ -13,6 +13,7 @@ const SkinCanvas = ({
   shouldRotate,
   shouldWalk,
   shouldRun,
+  movementSpeed,
 }: {
   skinUrl: string;
   isLoading: boolean;
@@ -22,6 +23,7 @@ const SkinCanvas = ({
   shouldRotate: boolean;
   shouldWalk: boolean;
   shouldRun: boolean;
+  movementSpeed: string;
 }) => {
   useEffect(() => {
     if (!isLoading && typeof window !== "undefined") {
@@ -57,10 +59,10 @@ const SkinCanvas = ({
 
         // Default animations
         let walkingAnimation = new skinview3d.WalkingAnimation();
-        walkingAnimation.speed = 0.5;
+        walkingAnimation.speed = Number(movementSpeed);
 
         let runAnimation = new skinview3d.RunningAnimation();
-        runAnimation.speed = 1;
+        runAnimation.speed = Number(movementSpeed);
 
         // Determine which animation to use based on `shouldWalk` and `shouldRun`
         if (shouldWalk) {
@@ -129,6 +131,7 @@ const SkinCanvas = ({
     shouldRotate,
     shouldWalk,
     shouldRun,
+    movementSpeed,
   ]);
 
   return (
