@@ -72,6 +72,44 @@ export default function Home() {
               placeholder="Minecraft Username ; exp - Notch"
             />
 
+            <div className="flex gap-3">
+              <div className="">
+                <label
+                  className="block mb-2 text-sm  text-gray-900 "
+                  htmlFor="file_input"
+                >
+                  Upload file
+                </label>
+                <input
+                  className="block w-full text-sm text-gray-900 border p-2 border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none "
+                  id="file_input"
+                  type="file"
+                />
+              </div>
+              <div className="">
+                <p className=" mb-2 text-sm opacity-0  text-gray-900 ">
+                  Upload file
+                </p>
+                {/* <input
+                  className="block w-full text-sm text-gray-900 border p-2 border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none "
+                  id="file_input"
+                  type="file"
+                /> */}
+                {playerDetail?.textures?.skin?.url ? (
+                  <a
+                    href={playerDetail.textures.skin.url}
+                    className="p-2 border-2"
+                    download
+                    target="_blank"
+                  >
+                    Download Skin
+                  </a>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+            </div>
+
             {/* <button
             type="submit"
             className="bg-emerald-700 hover:bg-emerald-600 font-medium mx-1 rounded-lg px-4 py-3"
