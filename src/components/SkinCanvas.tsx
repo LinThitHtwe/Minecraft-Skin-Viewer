@@ -14,6 +14,7 @@ const SkinCanvas = ({
   shouldWalk,
   shouldRun,
   movementSpeed,
+  backgroundImage,
 }: {
   skinUrl: string;
   isLoading: boolean;
@@ -24,6 +25,7 @@ const SkinCanvas = ({
   shouldWalk: boolean;
   shouldRun: boolean;
   movementSpeed: string;
+  backgroundImage: string | null;
 }) => {
   useEffect(() => {
     if (!isLoading && typeof window !== "undefined") {
@@ -47,7 +49,9 @@ const SkinCanvas = ({
 
         // Set the background color
         skinViewer.background = backgroundColor;
-
+        if (backgroundImage) {
+          skinViewer.loadBackground(backgroundImage);
+        }
         // Change camera FOV
         skinViewer.fov = Number(fov);
 
@@ -64,13 +68,11 @@ const SkinCanvas = ({
         let runAnimation = new skinview3d.RunningAnimation();
         runAnimation.speed = Number(movementSpeed);
 
-        // Determine which animation to use based on `shouldWalk` and `shouldRun`
         if (shouldWalk) {
           skinViewer.animation = walkingAnimation;
         } else if (shouldRun) {
           skinViewer.animation = runAnimation;
         } else {
-          // If both shouldWalk and shouldRun are false, remove animation
           skinViewer.animation = null;
         }
 
@@ -132,6 +134,7 @@ const SkinCanvas = ({
     shouldWalk,
     shouldRun,
     movementSpeed,
+    backgroundImage,
   ]);
 
   return (
