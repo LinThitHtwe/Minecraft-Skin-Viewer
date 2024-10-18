@@ -15,6 +15,7 @@ const SkinCanvas = ({
   shouldRun,
   movementSpeed,
   backgroundImage,
+  isPanorama,
 }: {
   skinUrl: string;
   isLoading: boolean;
@@ -26,6 +27,7 @@ const SkinCanvas = ({
   shouldRun: boolean;
   movementSpeed: string;
   backgroundImage: string | null;
+  isPanorama: boolean;
 }) => {
   useEffect(() => {
     if (!isLoading && typeof window !== "undefined") {
@@ -51,6 +53,9 @@ const SkinCanvas = ({
         skinViewer.background = backgroundColor;
         if (backgroundImage) {
           skinViewer.loadBackground(backgroundImage);
+        }
+        if (isPanorama) {
+          skinViewer.loadPanorama(backgroundImage);
         }
         // Change camera FOV
         skinViewer.fov = Number(fov);
@@ -135,6 +140,7 @@ const SkinCanvas = ({
     shouldRun,
     movementSpeed,
     backgroundImage,
+    isPanorama,
   ]);
 
   return (

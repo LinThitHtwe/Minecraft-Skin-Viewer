@@ -17,6 +17,7 @@ export default function Home() {
   const [fov, setFov] = useState("75");
   const [movementSpeed, setMovementSpeed] = useState("0.6");
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [isPanorama, setIsPanorama] = useState(false);
 
   const handleAnimationCheckbox = () => {
     setShouldAnimationPlay(!shouldAnimationPlay);
@@ -318,7 +319,13 @@ export default function Home() {
             </div>
           </div>
           <label className="inline-flex mb-6 items-center cursor-pointer">
-            <input type="checkbox" value="" className="sr-only peer" />
+            <input
+              type="checkbox"
+              onChange={() => setIsPanorama(!isPanorama)}
+              checked={isPanorama}
+              className="sr-only peer"
+              disabled={backgroundImage ? false : true}
+            />
             <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
             <span className="ms-2  text-sm text-gray-900">
               Set Background as Panorama
@@ -348,11 +355,11 @@ export default function Home() {
             shouldRun={shouldRun}
             movementSpeed={movementSpeed}
             backgroundImage={backgroundImage}
+            isPanorama={isPanorama}
           />
         </div>
       </div>
       <div className="text-center py-10">
-        {" "}
         Enjoy this project ? Why not give a star on github ?
       </div>
     </>
