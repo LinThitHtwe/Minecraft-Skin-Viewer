@@ -16,10 +16,11 @@ const SkinCanvas = ({
   movementSpeed,
   backgroundImage,
   isPanorama,
+  uploadedSkin
 }: {
   skinUrl: string;
   isLoading: boolean;
-  backgroundColor: string;
+  backgroundColor: null | string;
   fov: string;
   shouldAnimationPlay: boolean;
   shouldRotate: boolean;
@@ -28,6 +29,7 @@ const SkinCanvas = ({
   movementSpeed: string;
   backgroundImage: string | null;
   isPanorama: boolean;
+  uploadedSkin: null | string;
 }) => {
   useEffect(() => {
     if (!isLoading && typeof window !== "undefined") {
@@ -38,7 +40,7 @@ const SkinCanvas = ({
           canvas: canvas,
           width: 200,
           height: 100,
-          skin: skinUrl || NOTCHSKINURL,
+          skin: uploadedSkin ? uploadedSkin : (skinUrl || NOTCHSKINURL),
         });
 
         // Change viewer size
@@ -49,8 +51,9 @@ const SkinCanvas = ({
           skinViewer.height = height;
         }
 
-        // Set the background color
-        skinViewer.background = backgroundColor;
+        if (backgroundColor) {
+          skinViewer.background = backgroundColor;
+        }
         if (backgroundImage) {
           skinViewer.loadBackground(backgroundImage);
         }
@@ -141,6 +144,7 @@ const SkinCanvas = ({
     movementSpeed,
     backgroundImage,
     isPanorama,
+    uploadedSkin
   ]);
 
   return (
@@ -149,7 +153,7 @@ const SkinCanvas = ({
         <canvas
           id="skin_container"
           className=" rounded-2xl"
-          //style={{ width: "50%", height: "80%" }}
+        //style={{ width: "50%", height: "80%" }}
         ></canvas>
       ) : (
         <div className="text-4xl text-black">Loading...</div>

@@ -2,9 +2,10 @@
 
 import { getPlayerDetail } from "@/apiCalls/queryFunctions";
 import SkinCanvas from "@/components/SkinCanvas";
+import Download04Icon from "@/icons/download.icon";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [inputUsername, setInputUsername] = useState("Notch");
@@ -13,11 +14,61 @@ export default function Home() {
   const [shouldRotate, setShouldRotate] = useState(true);
   const [shouldWalk, setShouldWalk] = useState(true);
   const [shouldRun, setShouldRun] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const [backgroundColor, setBackgroundColor] = useState<string>("");
   const [fov, setFov] = useState("75");
   const [movementSpeed, setMovementSpeed] = useState("0.6");
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [shouldBackgroundAppear, setShouldBackgroundAppear] = useState(false);
   const [isPanorama, setIsPanorama] = useState(false);
+  const [showResetButton, setShowResetButton] = useState(false);
+  const [uploadSkin, setUploadSkin] = useState<string | null>(null);
+
+  useEffect(() => {
+    const hasChanges =
+      inputUsername !== "Notch" ||
+      searchedUsername !== "" ||
+      shouldAnimationPlay !== true ||
+      shouldRotate !== true ||
+      shouldWalk !== true ||
+      shouldRun !== false ||
+      backgroundColor !== "" ||
+      fov !== "75" ||
+      movementSpeed !== "0.6" ||
+      backgroundImage !== null ||
+      shouldBackgroundAppear !== false ||
+      isPanorama !== false;
+
+    setShowResetButton(hasChanges);
+  }, [
+    inputUsername,
+    searchedUsername,
+    shouldAnimationPlay,
+    shouldRotate,
+    shouldWalk,
+    shouldRun,
+    backgroundColor,
+    fov,
+    movementSpeed,
+    backgroundImage,
+    shouldBackgroundAppear,
+    isPanorama,
+  ]);
+
+  const resetStates = () => {
+    setInputUsername("Notch");
+    setSearchedUsername("");
+    setShouldAnimationPlay(true);
+    setShouldRotate(true);
+    setShouldWalk(true);
+    setShouldRun(false);
+    setBackgroundColor("");
+    setFov("75");
+    setMovementSpeed("0.6");
+    setBackgroundImage(null);
+    setShouldBackgroundAppear(false);
+    setIsPanorama(false);
+  };
+
 
   const handleAnimationCheckbox = () => {
     setShouldAnimationPlay(!shouldAnimationPlay);
@@ -43,6 +94,15 @@ export default function Home() {
     if (file && file.type === "image/png") {
       const fileUrl = URL.createObjectURL(file);
       setBackgroundImage(fileUrl);
+    }
+  };
+
+  const handleUploadSkin = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file && file.type === "image/png") {
+      const fileUrl = URL.createObjectURL(file);
+      setUploadSkin(fileUrl);
     }
   };
 
@@ -73,52 +133,61 @@ export default function Home() {
   return (
     <>
       <div className="grid grid-cols-2 py-6 items-stretch px-28 gap-6  ">
-        <div className="border-2 rounded-2xl p-4">
-          <h1 className="text-black text-3xl mb-5">Minecraft Skin Viewer</h1>
+        <div className="border-2 border-card-border bg-card-background rounded-2xl p-4">
+          <h1 className="text-text-primary text-3xl mb-5">
+            Minecraft Skin Viewer
+          </h1>
           <form onSubmit={searchUser} className="flex gap-3 flex-col mb-3">
+            <label
+              className="block text-sm text-gray-900 "
+              htmlFor="file_input"
+            >
+              Search username
+            </label>
             <input
               value={inputUsername}
               onChange={(e) => setInputUsername(e.target.value)}
-              className="border-2 tracking-normal  text-black w-full h-14 focus:outline-none py-2 px-4 rounded-lg"
+              className="border-2 border-card-border bg-background tracking-normal  text-black w-full h-14 focus:outline-none py-2 px-4 rounded-lg"
               placeholder="Minecraft Username ; exp - Notch"
             />
-
+            <div className="relative">
+              <div className="absolute -top-2 w-full flex justify-center text-sm">
+                <p className="text-center bg-card-background px-4 w-fit">or</p>
+              </div>
+              <div className="border border-card-border  "></div>
+            </div>
             <div className="flex gap-3">
-              <div className="">
+              <div className="w-full">
                 <label
                   className="block mb-2 text-sm  text-gray-900 "
                   htmlFor="file_input"
                 >
-                  Upload file
+                  Upload Skin File
                 </label>
                 <input
-                  className="block w-full text-sm text-gray-900 border p-2 border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none "
+                  className="block w-full text-sm text-gray-900 border p-2 border-card-border rounded-lg cursor-pointer bg-background focus:outline-none "
                   id="file_input"
                   type="file"
+                  accept="image/png"
+                  onChange={handleUploadSkin}
                 />
               </div>
-              <div className="">
-                <p className=" mb-2 text-sm opacity-0  text-gray-900 ">
-                  Upload file
-                </p>
-                {/* <input
-                  className="block w-full text-sm text-gray-900 border p-2 border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none "
-                  id="file_input"
-                  type="file"
-                /> */}
+              {/* <div className="flex items-end">
+
                 {playerDetail?.textures?.skin?.url ? (
                   <a
                     href={playerDetail.textures.skin.url}
-                    className="p-2 border-2"
+                    className="p-2 flex items-center border-card-border rounded-lg border-2"
                     download
                     target="_blank"
                   >
-                    Download Skin
+                    <span className="text-sm">Download Skin</span>
+                    <Download04Icon svgProps={{ className: "text-text-primary size-6" }} />
                   </a>
                 ) : (
                   <div></div>
                 )}
-              </div>
+              </div> */}
             </div>
 
             {/* <button
@@ -128,7 +197,7 @@ export default function Home() {
             Search
           </button> */}
           </form>
-          <p className="text-black text-lg font-medium mb-4">Configure</p>
+          <p className="text-black text-lg border-b border-card-border pb-1 font-medium mb-4">Configure</p>
           <div className="mb-4 flex gap-5">
             <div className="w-fit">
               <label
@@ -164,7 +233,7 @@ export default function Home() {
             </div>
           </div>
 
-          <label className="inline-flex font-medium border-b-2 mb-3 w-full pb-1 items-center cursor-pointer">
+          <label className="inline-flex font-medium border-b-2 border-card-border mb-3 w-full pb-1 items-center cursor-pointer">
             <span className="text-lg mr-2 text-gray-900">Animations</span>
             <input
               type="checkbox"
@@ -172,15 +241,14 @@ export default function Home() {
               onClick={handleAnimationCheckbox}
               className="sr-only peer"
             />
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
           </label>
           <div className="flex gap-4 mb-4">
             <label
-              className={`inline-flex items-center ${
-                shouldAnimationPlay
-                  ? "cursor-pointer"
-                  : "cursor-not-allowed opacity-70"
-              }`}
+              className={`inline-flex items-center ${shouldAnimationPlay
+                ? "cursor-pointer"
+                : "cursor-not-allowed opacity-70"
+                }`}
             >
               <input
                 type="checkbox"
@@ -189,15 +257,15 @@ export default function Home() {
                 onChange={() => setShouldRotate(!shouldRotate)}
                 checked={shouldRotate}
               />
-              <div className="relative w-11 h-6 bg-gray-200  peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+              <div className="relative w-11 h-6 bg-gray-200  peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+
               <span className="ms-2  text-sm text-gray-900">Rotate</span>
             </label>
             <label
-              className={`inline-flex items-center ${
-                shouldAnimationPlay
-                  ? "cursor-pointer"
-                  : "cursor-not-allowed opacity-70"
-              }`}
+              className={`inline-flex items-center ${shouldAnimationPlay
+                ? "cursor-pointer"
+                : "cursor-not-allowed opacity-70"
+                }`}
             >
               <input
                 type="checkbox"
@@ -206,15 +274,14 @@ export default function Home() {
                 checked={shouldWalk}
                 onChange={() => handleWalkOrRunAnimationCheckbox(true)}
               />
-              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
               <span className="ms-2  text-sm text-gray-900">Walk</span>
             </label>
             <label
-              className={`inline-flex items-center ${
-                shouldAnimationPlay
-                  ? "cursor-pointer"
-                  : "cursor-not-allowed opacity-70"
-              }`}
+              className={`inline-flex items-center ${shouldAnimationPlay
+                ? "cursor-pointer"
+                : "cursor-not-allowed opacity-70"
+                }`}
             >
               <input
                 type="checkbox"
@@ -223,7 +290,7 @@ export default function Home() {
                 checked={shouldRun}
                 onChange={() => handleWalkOrRunAnimationCheckbox(false)}
               />
-              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
               <span className="ms-2  text-sm text-gray-900">Run</span>
             </label>
           </div>
@@ -231,7 +298,7 @@ export default function Home() {
             htmlFor="minmax-range"
             className="block text-sm text-gray-900 "
           >
-            Walking Speed
+            {shouldWalk ? "Walking" : shouldRun ? "Running" : "Movement"} Speed
           </label>
           <div className="flex items-center gap-2 mb-6">
             <input
@@ -256,36 +323,38 @@ export default function Home() {
             )}
           </div>
 
-          <label className="inline-flex border-b-2 mb-3 w-full pb-1 items-center cursor-pointer">
+          <label className={`inline-flex  ${shouldBackgroundAppear ? "border-b-2" : ""} border-card-border mb-3 w-full pb-1 items-center cursor-pointer`}>
             <span className="text-lg mr-2 text-gray-900">Background</span>
             <input
               type="checkbox"
-              //checked={shouldAnimationPlay}
-              //onClick={handleAnimationCheckbox}
+              checked={shouldBackgroundAppear}
+              onClick={() => setShouldBackgroundAppear(!shouldBackgroundAppear)}
               className="sr-only peer"
             />
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
           </label>
-          <div className=" flex mb-6  gap-2">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="size-12">
-                <Image
-                  alt=""
-                  src="/Bg.jpg"
-                  className="object-cover size-full overflow-hidden"
-                  width={50}
-                  height={50}
-                />
-              </div>
-            ))}
+          {shouldBackgroundAppear && (
+            <>
+              <div className=" flex mb-6  gap-2">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="size-12">
+                    <Image
+                      alt=""
+                      src="/Bg.jpg"
+                      className="object-cover size-full overflow-hidden"
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                ))}
 
-            <div className="flex items-center justify-center size-12">
-              <label
-                htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center size-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  hover:bg-gray-100"
-              >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  {/* <svg
+                <div className="flex items-center justify-center size-12">
+                  <label
+                    htmlFor="dropzone-file"
+                    className="flex flex-col items-center justify-center size-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  hover:bg-gray-100"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      {/* <svg
                     className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
@@ -300,46 +369,49 @@ export default function Home() {
                       d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                     />
                   </svg> */}
-                  {/* <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      {/* <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                     <span className="font-semibold">Click to upload</span> or
                     drag and drop
                   </p> */}
-                  {/* <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {/* <p className="text-xs text-gray-500 dark:text-gray-400">
                     PNG (MAX. 800x400px)
                   </p> */}
+                    </div>
+                    <input
+                      id="dropzone-file"
+                      type="file"
+                      accept="image/png"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
+              </div>
+              <label className="inline-flex mb-6 items-center cursor-pointer">
                 <input
-                  id="dropzone-file"
-                  type="file"
-                  accept="image/png"
-                  onChange={handleFileChange}
-                  className="hidden"
+                  type="checkbox"
+                  onChange={() => setIsPanorama(!isPanorama)}
+                  checked={isPanorama}
+                  className="sr-only peer"
+                  disabled={backgroundImage ? false : true}
                 />
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+                <span className="ms-2  text-sm text-gray-900">
+                  Set Background as Panorama
+                </span>
               </label>
-            </div>
-          </div>
-          <label className="inline-flex mb-6 items-center cursor-pointer">
-            <input
-              type="checkbox"
-              onChange={() => setIsPanorama(!isPanorama)}
-              checked={isPanorama}
-              className="sr-only peer"
-              disabled={backgroundImage ? false : true}
-            />
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
-            <span className="ms-2  text-sm text-gray-900">
-              Set Background as Panorama
-            </span>
-          </label>
-          {/* <button
+            </>)}
+          {showResetButton && <button
+            onClick={resetStates}
             type="reset"
-            className="bg-slate-400 rounded-lg block w-full py-2 "
+            className="bg-[#a9db7b] rounded-lg block w-full  py-2 "
           >
             Reset
-          </button> */}
+          </button>
+          }
         </div>
 
-        <div className=" overflow-hidden rounded-2xl border-2">
+        <div className=" overflow-hidden rounded-2xl border-[#cbe9ad] bg-[#e4f4d3] border-2">
           <SkinCanvas
             skinUrl={
               playerDetail?.textures.skin.url
@@ -356,10 +428,11 @@ export default function Home() {
             movementSpeed={movementSpeed}
             backgroundImage={backgroundImage}
             isPanorama={isPanorama}
+            uploadedSkin={uploadSkin}
           />
         </div>
       </div>
-      <div className="text-center py-10">
+      <div className="text-center py-10 ">
         Enjoy this project ? Why not give a star on github ?
       </div>
     </>

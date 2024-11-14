@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Proza_Libre } from "next/font/google";
 import "./globals.css";
 import Provider from "@/provider/Provider";
 
@@ -15,7 +15,7 @@ import Provider from "@/provider/Provider";
 //   weight: "100 900",
 // });
 
-const inter = DM_Sans({ subsets: ["latin"] });
+const inter = Proza_Libre({ subsets: ["latin"], weight: "400" });
 
 // const minecraftFont = localFont({
 //   src: "./fonts/minecraft_font.ttf",
@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} h-screen bg-[#FFF] tracking-tight antialiased`}
+        className={`${inter.className} h-screen bg-background tracking-tight antialiased`}
       >
         <Provider>{children}</Provider>
       </body>

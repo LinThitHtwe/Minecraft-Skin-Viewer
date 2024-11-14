@@ -2,92 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* :root {
-  --background: #ffffff;
-  --foreground: #171717;
+input[type="range"] {
+    -webkit-appearance: none;
+    /* Remove default styling */
+    width: 100%;
+    height: 8px;
+    background: #f3faeb;
+    /* Track color */
+    outline: none;
+    opacity: 1;
+    border: 2px solid #cbe9ad;
+    transition: opacity 0.2s;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Change thumb color */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: #8ac754;
+    /* Thumb color */
+    border-radius: 50%;
+    cursor: pointer;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-} */
-/*  */
-
-/* For Chrome, Safari, and Opera */
-input[type="range"].range-slider::-webkit-slider-runnable-track {
-  background: #4ade80; /* Track color */
-  height: 8px;
-  border-radius: 10px;
-}
-
-input[type="range"].range-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #4ade80; /* Thumb color */
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #ffffff; /* Optional border */
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-}
-
-input[type="range"].range-slider:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.4); /* Add focus effect */
-}
-
-/* For Firefox */
-input[type="range"].range-slider::-moz-range-track {
-  background: #4ade80;
-  height: 8px;
-  border-radius: 10px;
-}
-
-input[type="range"].range-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #4ade80;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-}
-
-/* For Internet Explorer */
-input[type="range"].range-slider::-ms-track {
-  background: transparent;
-  border-color: transparent;
-  color: transparent;
-  width: 100%;
-  height: 8px;
-}
-
-input[type="range"].range-slider::-ms-fill-lower {
-  background: #4ade80;
-}
-
-input[type="range"].range-slider::-ms-fill-upper {
-  background: #4ade80;
-}
-
-input[type="range"].range-slider::-ms-thumb {
-  width: 20px;
-  height: 20px;
-  background: #4ade80;
-  border-radius: 50%;
-  cursor: pointer;
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: #8ac754;
+    /* Thumb color */
+    border-radius: 50%;
+    cursor: pointer;
 }

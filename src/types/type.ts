@@ -26,3 +26,8 @@ export type MinecraftUserDetail = {
   textures: Textures;
   created_at: string;
 };
+
+export type IconProps = {
+  strokeWidth?: string;
+  svgProps?: React.SVGProps<SVGSVGElement>;
+};
