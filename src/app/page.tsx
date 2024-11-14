@@ -5,9 +5,10 @@ import SkinCanvas from "@/components/SkinCanvas";
 import Download04Icon from "@/icons/download.icon";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const uploadSkinInputRef = useRef<HTMLInputElement>(null);
   const [inputUsername, setInputUsername] = useState("Notch");
   const [searchedUsername, setSearchedUsername] = useState("");
   const [shouldAnimationPlay, setShouldAnimationPlay] = useState(true);
@@ -103,6 +104,7 @@ export default function Home() {
     if (file && file.type === "image/png") {
       const fileUrl = URL.createObjectURL(file);
       setUploadSkin(fileUrl);
+      setInputUsername("");
     }
   };
 
@@ -117,6 +119,10 @@ export default function Home() {
 
   const searchUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (uploadSkinInputRef.current) {
+      uploadSkinInputRef.current.value = "";
+    }
+    setUploadSkin(null);
     setSearchedUsername(inputUsername);
   };
 
@@ -170,6 +176,7 @@ export default function Home() {
                   type="file"
                   accept="image/png"
                   onChange={handleUploadSkin}
+                  ref={uploadSkinInputRef}
                 />
               </div>
               {/* <div className="flex items-end">
