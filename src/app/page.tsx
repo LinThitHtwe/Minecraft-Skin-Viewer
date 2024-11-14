@@ -2,6 +2,7 @@
 
 import { getPlayerDetail } from "@/apiCalls/queryFunctions";
 import SkinCanvas from "@/components/SkinCanvas";
+import Delete02Icon from "@/icons/delete.icon";
 import Download04Icon from "@/icons/download.icon";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -126,6 +127,13 @@ export default function Home() {
     setSearchedUsername(inputUsername);
   };
 
+  const removeUploadedSkin = () => {
+    if (uploadSkinInputRef.current) {
+      uploadSkinInputRef.current.value = "";
+    }
+    setUploadSkin(null);
+  }
+
   const {
     data: playerDetail,
     error,
@@ -162,24 +170,30 @@ export default function Home() {
               </div>
               <div className="border border-card-border  "></div>
             </div>
-            <div className="flex gap-3">
-              <div className="w-full">
-                <label
-                  className="block mb-2 text-sm  text-gray-900 "
-                  htmlFor="file_input"
-                >
-                  Upload Skin File
-                </label>
-                <input
-                  className="block w-full text-sm text-gray-900 border p-2 border-card-border rounded-lg cursor-pointer bg-background focus:outline-none "
-                  id="file_input"
-                  type="file"
-                  accept="image/png"
-                  onChange={handleUploadSkin}
-                  ref={uploadSkinInputRef}
-                />
-              </div>
-              {/* <div className="flex items-end">
+
+            <div className="w-full relative">
+              <label
+                className="block mb-2 text-sm  text-gray-900 "
+                htmlFor="file_input"
+              >
+                Upload Skin File
+              </label>
+              <input
+                className="block w-full text-sm text-gray-900 border p-2 border-card-border rounded-lg cursor-pointer bg-background focus:outline-none "
+                id="file_input"
+                type="file"
+                accept="image/png"
+                onChange={handleUploadSkin}
+                ref={uploadSkinInputRef}
+              />
+              {uploadSkin &&
+                <button onClick={removeUploadedSkin} className="absolute right-4  top-[55%]">
+                  <Delete02Icon svgProps={{ className: 'size-5', fill: 'none' }} strokeWidth="1.7" />
+                </button>
+              }
+
+            </div>
+            {/* <div className="flex items-end">
 
                 {playerDetail?.textures?.skin?.url ? (
                   <a
@@ -195,7 +209,6 @@ export default function Home() {
                   <div></div>
                 )}
               </div> */}
-            </div>
 
             {/* <button
             type="submit"
