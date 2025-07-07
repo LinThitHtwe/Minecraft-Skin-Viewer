@@ -1,165 +1,137 @@
 "use client";
+import { SkinViewerState } from "@/types/type";
 import React, { useEffect } from "react";
 
 const NOTCHSKINURL =
-  "http://textures.minecraft.net/texture/292009a4925b58f02c77dadc3ecef07ea4c7472f64e0fdc32ce5522489362680";
+	"http://textures.minecraft.net/texture/292009a4925b58f02c77dadc3ecef07ea4c7472f64e0fdc32ce5522489362680";
 
 const SkinCanvas = ({
-  skinUrl,
-  isLoading,
-  backgroundColor,
-  fov,
-  shouldAnimationPlay,
-  shouldRotate,
-  shouldWalk,
-  shouldRun,
-  movementSpeed,
-  backgroundImage,
-  isPanorama,
-  uploadedSkin
+	skinDetails,
+	isLoading,
+	skinUrl,
 }: {
-  skinUrl: string;
-  isLoading: boolean;
-  backgroundColor: null | string;
-  fov: string;
-  shouldAnimationPlay: boolean;
-  shouldRotate: boolean;
-  shouldWalk: boolean;
-  shouldRun: boolean;
-  movementSpeed: string;
-  backgroundImage: string | null;
-  isPanorama: boolean;
-  uploadedSkin: null | string;
+	skinDetails: SkinViewerState;
+	isLoading: boolean;
+	skinUrl: string;
 }) => {
-  useEffect(() => {
-    if (!isLoading && typeof window !== "undefined") {
-      const skinview3d = require("skinview3d");
-      const canvas = document.getElementById("skin_container");
-      if (canvas) {
-        const skinViewer = new skinview3d.SkinViewer({
-          canvas: canvas,
-          width: 200,
-          height: 100,
-          skin: uploadedSkin ? uploadedSkin : (skinUrl || NOTCHSKINURL),
-        });
+	useEffect(() => {
+		if (!isLoading && typeof window !== "undefined") {
+			const skinview3d = require("skinview3d");
+			const canvas = document.getElementById("skin_container");
+			if (canvas) {
+				const skinViewer = new skinview3d.SkinViewer({
+					canvas: canvas,
+					width: 200,
+					height: 100,
+					skin: skinDetails.uploadSkin ? skinDetails.uploadSkin : skinUrl || "",
+				});
 
-        // Change viewer size
-        const container = canvas.parentElement;
-        if (container) {
-          const { width, height } = container.getBoundingClientRect();
-          skinViewer.width = width;
-          skinViewer.height = height;
-        }
+				// Change viewer size
+				const container = canvas.parentElement;
+				if (container) {
+					const { width, height } = container.getBoundingClientRect();
+					skinViewer.width = width;
+					skinViewer.height = height;
+				}
 
-        if (backgroundColor) {
-          skinViewer.background = backgroundColor;
-        }
-        if (backgroundImage) {
-          skinViewer.loadBackground(backgroundImage);
-        }
-        if (isPanorama) {
-          skinViewer.loadPanorama(backgroundImage);
-        }
-        // Change camera FOV
-        skinViewer.fov = Number(fov);
+				if (skinDetails.backgroundColor) {
+					skinViewer.background = skinDetails.backgroundColor;
+				}
+				if (skinDetails.backgroundImage) {
+					skinViewer.loadBackground(skinDetails.backgroundImage);
+				}
+				if (skinDetails.isPanorama) {
+					skinViewer.loadPanorama(skinDetails.backgroundImage);
+				}
+				// Change camera FOV
+				skinViewer.fov = Number(skinDetails.fov);
 
-        // Zoom out
-        skinViewer.zoom = 0.6;
+				// Zoom out
+				skinViewer.zoom = 0.6;
 
-        // Rotate the player
-        skinViewer.autoRotate = shouldRotate;
+				// Rotate the player
+				skinViewer.autoRotate = skinDetails.shouldRotate;
 
-        // Default animations
-        let walkingAnimation = new skinview3d.WalkingAnimation();
-        walkingAnimation.speed = Number(movementSpeed);
+				// Default animations
+				let walkingAnimation = new skinview3d.WalkingAnimation();
+				walkingAnimation.speed = Number(skinDetails.movementSpeed);
 
-        let runAnimation = new skinview3d.RunningAnimation();
-        runAnimation.speed = Number(movementSpeed);
+				let runAnimation = new skinview3d.RunningAnimation();
+				runAnimation.speed = Number(skinDetails.movementSpeed);
 
-        if (shouldWalk) {
-          skinViewer.animation = walkingAnimation;
-        } else if (shouldRun) {
-          skinViewer.animation = runAnimation;
-        } else {
-          skinViewer.animation = null;
-        }
+				if (skinDetails.shouldWalk) {
+					skinViewer.animation = walkingAnimation;
+				} else if (skinDetails.shouldRun) {
+					skinViewer.animation = runAnimation;
+				} else {
+					skinViewer.animation = null;
+				}
 
-        // Variables to handle dragging state
-        let isDragging = false;
+				// Variables to handle dragging state
+				let isDragging = false;
 
-        if (!shouldAnimationPlay) {
-          skinViewer.autoRotate = false;
-          if (skinViewer.animation) skinViewer.animation.paused = true;
-        }
+				if (!skinDetails.shouldAnimationPlay) {
+					skinViewer.autoRotate = false;
+					if (skinViewer.animation) skinViewer.animation.paused = true;
+				}
 
-        // Event listeners for dragging
-        const startDragging = () => {
-          isDragging = true;
+				// Event listeners for dragging
+				const startDragging = () => {
+					isDragging = true;
 
-          // Pause animations and disable autoRotate based on conditions
-          if (shouldAnimationPlay && skinViewer.animation) {
-            skinViewer.animation.paused = true;
-          }
+					// Pause animations and disable autoRotate based on conditions
+					if (skinDetails.shouldAnimationPlay && skinViewer.animation) {
+						skinViewer.animation.paused = true;
+					}
 
-          if (!shouldRotate) {
-            skinViewer.autoRotate = false;
-          }
+					if (!skinDetails.shouldRotate) {
+						skinViewer.autoRotate = false;
+					}
 
-          canvas.style.cursor = "grabbing";
-        };
+					canvas.style.cursor = "grabbing";
+				};
 
-        const stopDragging = () => {
-          isDragging = false;
+				const stopDragging = () => {
+					isDragging = false;
 
-          // Resume animations and enable autoRotate based on conditions
-          if (shouldAnimationPlay && skinViewer.animation) {
-            skinViewer.animation.paused = false;
-          }
+					// Resume animations and enable autoRotate based on conditions
+					if (skinDetails.shouldAnimationPlay && skinViewer.animation) {
+						skinViewer.animation.paused = false;
+					}
 
-          if (shouldRotate) {
-            skinViewer.autoRotate = true;
-          }
+					if (skinDetails.shouldRotate) {
+						skinViewer.autoRotate = true;
+					}
 
-          canvas.style.cursor = "grab";
-        };
+					canvas.style.cursor = "grab";
+				};
 
-        canvas.addEventListener("mousedown", startDragging);
-        canvas.addEventListener("mouseup", stopDragging);
+				canvas.addEventListener("mousedown", startDragging);
+				canvas.addEventListener("mouseup", stopDragging);
 
-        return () => {
-          canvas.removeEventListener("mousedown", startDragging);
-          canvas.removeEventListener("mouseup", stopDragging);
-        };
-      }
-    }
-  }, [
-    skinUrl,
-    isLoading,
-    backgroundColor,
-    fov,
-    shouldAnimationPlay,
-    shouldRotate,
-    shouldWalk,
-    shouldRun,
-    movementSpeed,
-    backgroundImage,
-    isPanorama,
-    uploadedSkin
-  ]);
+				return () => {
+					canvas.removeEventListener("mousedown", startDragging);
+					canvas.removeEventListener("mouseup", stopDragging);
+				};
+			}
+		}
+	}, [skinUrl, isLoading, skinDetails]);
 
-  return (
-    <>
-      {!isLoading ? (
-        <canvas
-          id="skin_container"
-          className=" rounded-2xl"
-        //style={{ width: "50%", height: "80%" }}
-        ></canvas>
-      ) : (
-        <div className="text-4xl text-black">Loading...</div>
-      )}
-    </>
-  );
+	return (
+		<>
+			{!isLoading ? (
+				<canvas
+					id="skin_container"
+					className=" rounded-2xl"
+					//style={{ width: "50%", height: "80%" }}
+				></canvas>
+			) : (
+				<div className=" flex justify-center items-center h-full">
+					<div className="loader"></div>
+				</div>
+			)}
+		</>
+	);
 };
 
 export default SkinCanvas;
