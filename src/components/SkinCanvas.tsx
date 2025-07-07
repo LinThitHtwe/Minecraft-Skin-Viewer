@@ -2,8 +2,8 @@
 import { SkinViewerState } from "@/types/type";
 import React, { useEffect } from "react";
 
-const NOTCHSKINURL =
-	"http://textures.minecraft.net/texture/292009a4925b58f02c77dadc3ecef07ea4c7472f64e0fdc32ce5522489362680";
+// const NOTCHSKINURL =
+// 	"http://textures.minecraft.net/texture/292009a4925b58f02c77dadc3ecef07ea4c7472f64e0fdc32ce5522489362680";
 
 const SkinCanvas = ({
 	skinDetails,
@@ -120,13 +120,19 @@ const SkinCanvas = ({
 	return (
 		<>
 			{!isLoading ? (
-				<canvas
-					id="skin_container"
-					className=" rounded-2xl"
-					//style={{ width: "50%", height: "80%" }}
-				></canvas>
+				skinUrl === "" ? (
+					<div className="justify-center flex items-center h-full text-text-primary">
+						<p>Player not found or skin not available.</p>
+					</div>
+				) : (
+					<canvas
+						id="skin_container"
+						className="rounded-2xl"
+						// style={{ width: "50%", height: "80%" }}
+					></canvas>
+				)
 			) : (
-				<div className=" flex justify-center items-center h-full">
+				<div className="flex justify-center items-center h-full">
 					<div className="loader"></div>
 				</div>
 			)}
