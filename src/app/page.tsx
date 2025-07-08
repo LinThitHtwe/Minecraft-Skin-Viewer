@@ -171,8 +171,10 @@ export default function Home() {
 	};
 
 	const handleDownloadSkin = async () => {
-		const skinUrl = playerDetail?.textures.skin.url;
-		if (!skinUrl) return;
+		const rawSkinUrl = playerDetail?.textures.skin.url;
+		if (!rawSkinUrl) return;
+
+		const skinUrl = rawSkinUrl.replace(/^http:/, "https:");
 
 		try {
 			const response = await fetch(skinUrl);
