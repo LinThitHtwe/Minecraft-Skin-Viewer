@@ -67,6 +67,9 @@ export default function Home() {
 			isPanorama: false,
 			uploadSkin: null,
 		}));
+		if (inputUsernameRef.current) {
+			inputUsernameRef.current.value = "Notch";
+		}
 	};
 
 	const handleAnimationCheckbox = () => {
