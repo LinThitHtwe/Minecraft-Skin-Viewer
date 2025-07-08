@@ -3,6 +3,7 @@
 import { getPlayerDetail } from "@/apiCalls/queryFunctions";
 import SkinCanvas from "@/components/SkinCanvas";
 import Delete02Icon from "@/icons/delete.icon";
+import Download04Icon from "@/icons/download.icon";
 import { SkinViewerState } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -42,6 +43,12 @@ export default function Home() {
 
 		setShowResetButton(hasChanges);
 	}, [viewerState]);
+
+	useEffect(() => {
+		if (!viewerState.shouldBackgroundAppear) {
+			removeUploadedBackground();
+		}
+	}, [viewerState.shouldBackgroundAppear]);
 
 	const resetStates = () => {
 		setViewerState((prev) => ({
@@ -163,6 +170,31 @@ export default function Home() {
 		}
 	};
 
+	const handleDownloadSkin = async () => {
+		const skinUrl = playerDetail?.textures.skin.url;
+		if (!skinUrl) return;
+
+		try {
+			const response = await fetch(skinUrl);
+			const blob = await response.blob();
+
+			const url = URL.createObjectURL(blob);
+			const fileName = viewerState.searchedUsername
+				? `${viewerState.searchedUsername}-skin.png`
+				: "minecraft-skin.png";
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = fileName;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			toast.error("Unable to download the skin. Please try again later.");
+		}
+	};
+
 	const searchUser = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const inputUsername = inputUsernameRef.current?.value?.trim();
@@ -185,6 +217,14 @@ export default function Home() {
 		setViewerState((prev) => ({
 			...prev,
 			uploadSkin: null,
+		}));
+	};
+
+	const removeUploadedBackground = () => {
+		setViewerState((prev) => ({
+			...prev,
+			backgroundImage: null,
+			isPanorama: false,
 		}));
 	};
 
@@ -477,6 +517,18 @@ export default function Home() {
 										/>
 									</label>
 								</div>
+								<div className="flex items-center justify-center size-12">
+									{viewerState.backgroundImage && (
+										<button
+											onClick={removeUploadedBackground}
+											className="bg-red-500 hover:bg-red-600 text-white rounded-lg p-2">
+											<Delete02Icon
+												svgProps={{ className: "size-5", fill: "none" }}
+												strokeWidth="1.6"
+											/>
+										</button>
+									)}
+								</div>
 							</div>
 							<label className="inline-flex mb-6 items-center cursor-pointer">
 								<input
@@ -508,7 +560,7 @@ export default function Home() {
 					)}
 				</div>
 
-				<div className=" overflow-hidden h-screen lg:h-full rounded-2xl border-[#cbe9ad] bg-[#e4f4d3] border-2">
+				<div className=" overflow-hidden h-screen relative lg:h-full rounded-2xl border-[#cbe9ad] bg-[#e4f4d3] border-2">
 					<SkinCanvas
 						skinUrl={
 							playerDetail?.textures.skin.url
@@ -518,6 +570,21 @@ export default function Home() {
 						skinDetails={viewerState}
 						isLoading={isLoading}
 					/>
+					{playerDetail?.textures.skin.url && (
+						<button
+							// href={playerDetail?.textures.skin.url}
+							// download="minecraft-skin.png"
+							onClick={handleDownloadSkin}
+							className="absolute right-5 bottom-5 z-10 bg-peer-focus-ring rounded-xl p-2 cursor-pointer">
+							<Download04Icon
+								svgProps={{
+									className: "size-8 text-text-primary",
+									fill: "none",
+								}}
+								strokeWidth="1.7"
+							/>
+						</button>
+					)}
 				</div>
 			</div>
 			<div className="flex justify-center items-center py-10 ">
