@@ -6,7 +6,9 @@ import Delete02Icon from "@/icons/delete.icon";
 import { SkinViewerState } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const defaultViewerState: SkinViewerState = {
 	inputUsername: "Notch",
@@ -26,6 +28,7 @@ const defaultViewerState: SkinViewerState = {
 
 export default function Home() {
 	const uploadSkinInputRef = useRef<HTMLInputElement>(null);
+	const inputUsernameRef = useRef<HTMLInputElement>(null);
 	const [viewerState, setViewerState] =
 		useState<SkinViewerState>(defaultViewerState);
 	const [showResetButton, setShowResetButton] = useState(false);
@@ -98,13 +101,53 @@ export default function Home() {
 
 	const handleUploadSkin = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
+
 		if (file && file.type === "image/png") {
-			const fileUrl = URL.createObjectURL(file);
-			setViewerState((prev) => ({
-				...prev,
-				uploadSkin: fileUrl,
-				inputUsername: "",
-			}));
+			const reader = new FileReader();
+
+			reader.onload = (e) => {
+				const img = document.createElement("img");
+				img.src = e.target?.result as string;
+
+				img.onload = () => {
+					const width = img.naturalWidth;
+					const height = img.naturalHeight;
+
+					const isValidSkinSize =
+						(width === 64 && height === 64) || (width === 64 && height === 32);
+
+					if (isValidSkinSize) {
+						setViewerState((prev) => ({
+							...prev,
+							uploadSkin: img.src,
+							inputUsername: "",
+						}));
+					} else {
+						toast.error(
+							` Invalid skin size: ${width}x${height}. Must be 64x64 or 64x32.`
+						);
+						if (uploadSkinInputRef.current) {
+							uploadSkinInputRef.current.value = "";
+						}
+					}
+				};
+
+				img.onerror = () => {
+					toast.error(
+						"⚠️ Unable to load the image. Please try another PNG file."
+					);
+					if (uploadSkinInputRef.current) {
+						uploadSkinInputRef.current.value = "";
+					}
+				};
+			};
+
+			reader.readAsDataURL(file);
+		} else {
+			toast.error("📁 Please upload a valid PNG image.");
+			if (uploadSkinInputRef.current) {
+				uploadSkinInputRef.current.value = "";
+			}
 		}
 	};
 
@@ -122,13 +165,16 @@ export default function Home() {
 
 	const searchUser = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		const inputUsername = inputUsernameRef.current?.value?.trim();
+		if (!inputUsername) return;
+
 		if (uploadSkinInputRef.current) {
 			uploadSkinInputRef.current.value = "";
 		}
 		setViewerState((prev) => ({
 			...prev,
 			uploadSkin: null,
-			searchedUsername: prev.inputUsername,
+			searchedUsername: inputUsername,
 		}));
 	};
 
@@ -163,29 +209,14 @@ export default function Home() {
 						<label className="block text-sm  " htmlFor="file_input">
 							Search username
 						</label>
-						{/* <input
-							value={viewerState.inputUsername}
-							onChange={(e) =>
-								setViewerState((prev) => ({
-									...prev,
-									inputUsername: e.target.value,
-								}))
-							}
-							className="border-2 border-card-border bg-background tracking-normal   w-full h-14 focus:outline-none py-2 px-4 rounded-lg"
-							placeholder="Minecraft Username ; exp - Notch"
-						/> */}
 						<div className="relative w-full">
 							<input
-								value={viewerState.inputUsername}
-								onChange={(e) =>
-									setViewerState((prev) => ({
-										...prev,
-										inputUsername: e.target.value,
-									}))
-								}
+								defaultValue={defaultViewerState.inputUsername}
+								ref={inputUsernameRef}
 								className="border-2 border-card-border bg-background tracking-normal w-full h-14 focus:outline-none py-2 pr-14 pl-4 rounded-lg"
 								placeholder="Minecraft Username ; exp - Notch"
 							/>
+
 							<button
 								type="submit"
 								className="absolute right-2 top-1/2 -translate-y-1/2 text-sm bg-btn-primary  px-3 py-1.5 rounded-md hover:bg-primary/90 transition">
@@ -277,7 +308,7 @@ export default function Home() {
 							onClick={handleAnimationCheckbox}
 							className="sr-only peer"
 						/>
-						<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+						<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-btn-primary"></div>
 					</label>
 					<div className="flex gap-4 mb-4">
 						<label
@@ -298,7 +329,7 @@ export default function Home() {
 								}
 								checked={viewerState.shouldRotate}
 							/>
-							<div className="relative w-11 h-6 bg-gray-300  peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+							<div className="relative w-11 h-6 bg-gray-300  peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-btn-primary"></div>
 
 							<span className="ms-2  text-sm ">Rotate</span>
 						</label>
@@ -315,7 +346,7 @@ export default function Home() {
 								checked={viewerState.shouldWalk}
 								onChange={() => handleWalkOrRunAnimationCheckbox(true)}
 							/>
-							<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+							<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-btn-primary"></div>
 							<span className="ms-2  text-sm ">Walk</span>
 						</label>
 						<label
@@ -331,7 +362,7 @@ export default function Home() {
 								checked={viewerState.shouldRun}
 								onChange={() => handleWalkOrRunAnimationCheckbox(false)}
 							/>
-							<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+							<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-btn-primary"></div>
 							<span className="ms-2  text-sm ">Run</span>
 						</label>
 					</div>
@@ -386,28 +417,30 @@ export default function Home() {
 							}
 							className="sr-only peer"
 						/>
-						<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+						<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-btn-primary"></div>
 					</label>
 					{viewerState.shouldBackgroundAppear && (
 						<>
 							<div className=" flex mb-6  gap-2">
-								{/* {Array.from({ length: 4 }).map((_, index) => ( */}
-								<div className="size-12">
-									<Image
-										alt="Minecraft Background"
-										src="/Bg.jpg"
-										className="object-cover size-full overflow-hidden cursor-pointer rounded-lg"
-										width={50}
-										height={50}
-										onClick={() =>
-											setViewerState((prev) => ({
-												...prev,
-												backgroundImage: "/Bg.jpg",
-											}))
-										}
-									/>
-								</div>
-								{/* ))} */}
+								{["/Bg.jpg", "/Bg2.jpg", "/Bg3.jpg", "/Bg4.jpg"].map(
+									(bgImage) => (
+										<div className="size-12" key={bgImage}>
+											<Image
+												alt="Minecraft Background"
+												src={bgImage}
+												className="object-cover size-full overflow-hidden cursor-pointer rounded-lg"
+												width={50}
+												height={50}
+												onClick={() =>
+													setViewerState((prev) => ({
+														...prev,
+														backgroundImage: bgImage,
+													}))
+												}
+											/>
+										</div>
+									)
+								)}
 
 								<div className="flex items-center justify-center size-12">
 									<label
@@ -458,7 +491,7 @@ export default function Home() {
 									className="sr-only peer"
 									disabled={viewerState.backgroundImage ? false : true}
 								/>
-								<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-peer-check-bg"></div>
+								<div className="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-peer-focus-ring rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-btn-primary"></div>
 								<span className="ms-2  text-sm ">
 									Set Background as Panorama
 								</span>
@@ -487,8 +520,27 @@ export default function Home() {
 					/>
 				</div>
 			</div>
-			<div className="text-center py-10 ">
-				Enjoy this project ? Why not give a star on github ?
+			<div className="flex justify-center items-center py-10 ">
+				<Link
+					href={"https://github.com/LinThitHtwe/Minecraft-Skin-Viewer"}
+					target="_blank">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						width="24"
+						height="24"
+						color="#8ac754"
+						className="size-6"
+						fill="none">
+						<path
+							d="M6.51734 17.1132C6.91177 17.6905 8.10883 18.9228 9.74168 19.2333M9.86428 22C8.83582 21.8306 2 19.6057 2 12.0926C2 5.06329 8.0019 2 12.0008 2C15.9996 2 22 5.06329 22 12.0926C22 19.6057 15.1642 21.8306 14.1357 22C14.1357 22 13.9267 18.5826 14.0487 17.9969C14.1706 17.4113 13.7552 16.4688 13.7552 16.4688C14.7262 16.1055 16.2043 15.5847 16.7001 14.1874C17.0848 13.1032 17.3268 11.5288 16.2508 10.0489C16.2508 10.0489 16.5318 7.65809 15.9996 7.56548C15.4675 7.47287 13.8998 8.51192 13.8998 8.51192C13.4432 8.38248 12.4243 8.13476 12.0018 8.17939C11.5792 8.13476 10.5568 8.38248 10.1002 8.51192C10.1002 8.51192 8.53249 7.47287 8.00036 7.56548C7.46823 7.65809 7.74917 10.0489 7.74917 10.0489C6.67316 11.5288 6.91516 13.1032 7.2999 14.1874C7.79575 15.5847 9.27384 16.1055 10.2448 16.4688C10.2448 16.4688 9.82944 17.4113 9.95135 17.9969C10.0733 18.5826 9.86428 22 9.86428 22Z"
+							stroke="#8ac754"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</Link>
 			</div>
 		</>
 	);
